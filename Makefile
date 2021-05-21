@@ -7,7 +7,7 @@ bfuk: $(SOURCES) $(HEADERS)
 	g++ -fmodules-ts $(INTERFACES) $(SOURCES) src/main.cpp -o $@
 
 debug: $(SOURCES) $(HEADERS)
-	g++ -fmodules-ts $(INTERFACES) $(SOURCES) src/main.cpp -o $@
+	g++ -g -fmodules-ts $(INTERFACES) $(SOURCES) src/main.cpp -o $@
 
 clean:
 	@rm -f bfuk debug
