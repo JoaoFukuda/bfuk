@@ -1,13 +1,14 @@
 INTERFACES=src/term.cpp src/interpreter.cpp
-SOURCES=src/term-imp.cpp src/interpreter-imp.cpp
+IMPLEMENTATIONS=src/term-imp.cpp src/interpreter-imp.cpp
+LIBS=-lpthread
 
-all: bfuk
+bfuk: $(IMPLEMENTATIONS) $(HEADERS)
+	g++ -fmodules-ts $(INTERFACES) $(IMPLEMENTATIONS) src/main.cpp -o $@ $(LIBS)
 
-bfuk: $(SOURCES) $(HEADERS)
-	g++ -fmodules-ts $(INTERFACES) $(SOURCES) src/main.cpp -o $@
+all: bfuk debug
 
-debug: $(SOURCES) $(HEADERS)
-	g++ -g -fmodules-ts $(INTERFACES) $(SOURCES) src/main.cpp -o $@
+debug: $(IMPLEMENTATIONS) $(HEADERS)
+	g++ -g -fmodules-ts $(INTERFACES) $(IMPLEMENTATIONS) src/main.cpp -o $@ $(LIBS)
 
 clean:
 	@rm -f bfuk debug

@@ -12,8 +12,6 @@ Terminal::Terminal()
 
 Terminal::~Terminal()
 {
-	std::cout << "\r\nPress \e[1;93many key\e[m to exit";
-	std::cin.get();
 	std::cout << "\e[?25h" << "\e[?1049l" << std::flush;
 	system("/bin/stty -raw echo");
 }
