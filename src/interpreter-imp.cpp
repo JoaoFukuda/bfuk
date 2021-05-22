@@ -44,7 +44,7 @@ Interpreter::Interpreter()
 	_instruction_pointer = 0;
 	_vector = {};
 	_return_stack = {};
-	_code = "++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++[<.>-]";
+	_code = "++++++[>++++++++<-]++++++++++[>.<-]";
 }
 
 Interpreter::~Interpreter()
@@ -74,11 +74,14 @@ std::string Interpreter::run()
 		print_info();
 		std::this_thread::sleep_for(75ms);
 		if (state == State::Paused) continue;
-		if (_head >= _vector.size()) {
+		if (_head == static_cast<size_t>(-1)) {
+			_vector.insert(_vector.begin(), 0);
+			_head = 0;
+		}
+		else if (_head >= _vector.size()) {
 			_vector.resize(_head+1);
 			_vector[_head] = 0;
 		}
-		else if (_head < 0) throw("Head out of range");
 		switch (_code[_instruction_pointer]) {
 			case '+':
 				++_vector[_head];
