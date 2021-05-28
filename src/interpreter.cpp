@@ -4,6 +4,7 @@ module;
 #include <stack>
 #include <string>
 #include <vector>
+#include <mutex>
 
 export module interpreter;
 
@@ -12,7 +13,8 @@ enum class State
 	Stopped,
 	Paused,
 	Running,
-	Interrupted
+	Interrupted,
+	WaitingInput
 };
 
 export class Interpreter
@@ -24,6 +26,8 @@ export class Interpreter
 		std::stringstream _output;
 		std::stack<size_t> _return_stack;
 		std::vector<uint8_t> _vector;
+		std::mutex _input_m;
+		char _input;
 
 		void print_info() const;
 
@@ -32,9 +36,11 @@ export class Interpreter
 		~Interpreter();
 
 		bool should_quit() const;
+		bool waiting_input() const;
 
 		void load_from_file(const std::string &);
 		std::string run();
 		void interrupt();
 		void toggle_pause();
+		void send_input(char);
 };

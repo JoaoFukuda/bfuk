@@ -6,26 +6,33 @@ import interpreter;
 
 int main(int argc, char* argv[])
 {
-	Interpreter p;
+	Interpreter interpreter;
 
 	if (argc == 2) {
-		p.load_from_file(argv[1]);
+		interpreter.load_from_file(argv[1]);
 	}
 
 	{
 		Terminal t;
 		try {
-			std::thread t ([&] () { p.run(); });
+			std::thread t ([&] () { interpreter.run(); });
 			while (true) {
 				char input = std::cin.get();
-				if (p.should_quit()) break;
-				switch (input) {
-					case 'q':
-						p.interrupt();
-						break;
-					case ' ':
-						p.toggle_pause();
-						break;
+				if (interpreter.should_quit()) {
+					break;
+				}
+				else if (interpreter.waiting_input()) {
+					interpreter.send_input(input);
+				}
+				else {
+					switch (input) {
+						case 'q':
+							interpreter.interrupt();
+							break;
+						case ' ':
+							interpreter.toggle_pause();
+							break;
+					}
 				}
 			}
 			t.join();

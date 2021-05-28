@@ -10,6 +10,15 @@ module interpreter;
 
 using namespace std::chrono_literals;
 
+inline bool isValidChar(const char c)
+{
+	for (const char valid_c : "-+,.[]<>") {
+		if (c == valid_c)
+			return true;
+	}
+	return false;
+}
+
 std::string state_to_string(State state)
 {
 	switch (state) {
@@ -21,7 +30,10 @@ std::string state_to_string(State state)
 		return "RUNNING";
 	case State::Interrupted:
 		return "INTERRUPTED";
+	case State::WaitingInput:
+		return "WAITING_INPUT";
 	}
+	return "UNKNOWN";
 }
 
 void Interpreter::print_info() const
@@ -45,11 +57,11 @@ Interpreter::Interpreter()
 	_vector = {};
 	_return_stack = {};
 	_code = "++++++[>++++++++<-]++++++++++[>.<-]";
+	_input_m.lock();
 }
 
 Interpreter::~Interpreter()
-{
-}
+{ }
 
 bool Interpreter::should_quit() const
 {
@@ -71,9 +83,6 @@ std::string Interpreter::run()
 {
 	state = State::Running;
 	while (state == State::Running || state == State::Paused) {
-		print_info();
-		std::this_thread::sleep_for(75ms);
-		if (state == State::Paused) continue;
 		if (_head == static_cast<size_t>(-1)) {
 			_vector.insert(_vector.begin(), 0);
 			_head = 0;
@@ -82,6 +91,9 @@ std::string Interpreter::run()
 			_vector.resize(_head+1);
 			_vector[_head] = 0;
 		}
+		print_info();
+		std::this_thread::sleep_for(50ms);
+		if (state == State::Paused) continue;
 		switch (_code[_instruction_pointer]) {
 			case '+':
 				++_vector[_head];
@@ -96,10 +108,18 @@ std::string Interpreter::run()
 				--_head;
 				break;
 			case ',':
-				_vector[_head] = static_cast<char>(std::cin.get());
+				state = State::WaitingInput;
+				print_info();
+				_input_m.lock();
+				state = State::Running;
+				_vector[_head] = _input;
+				if (_vector[_head] >= '0' && _vector[_head] <= '9') {
+					_vector[_head] -= '0';
+				}
 				break;
 			case '.':
 				_output << static_cast<char>(_vector[_head]);
+				if (static_cast<char>(_vector[_head]) == '\n') _output << '\r';
 				break;
 			case'[':
 				_return_stack.push(_instruction_pointer);
@@ -125,6 +145,17 @@ std::string Interpreter::run()
 	}
 	std::cout << "\r\nPress \e[1;93many key\e[m to exit" << std::flush;
 	return _output.str();
+}
+
+void Interpreter::send_input(char input)
+{
+	_input = input;
+	_input_m.unlock();
+}
+
+bool Interpreter::waiting_input() const
+{
+	return state == State::WaitingInput;
 }
 
 void Interpreter::interrupt()
