@@ -38,16 +38,19 @@ std::string state_to_string(State state)
 
 void Interpreter::print_info() const
 {
-	std::cout << "\e[2J" << "\e[1;1H";
+	std::stringstream buffer;
+	buffer << "\e[2J" << "\e[1;1H";
 	for (int i = 0; i != _code.size(); ++i) {
-		std::cout << (i == _instruction_pointer ? "\e[1;30;103m" : "\e[1;93m") << _code[i] << "\e[m";
+		buffer << (i == _instruction_pointer ? "\e[1;30;103m" : "\e[1;93m") << _code[i] << "\e[m";
+		if (_code[i] == '\n') buffer << '\r';
 	}
-	std::cout << "\r\n\n";
+	buffer << "\r\n\n";
 	for (int i = 0; i != _vector.size(); ++i) {
-		std::cout << "[" << (i == _head ? "\e[1;30;103m" : "\e[1;93m") << " " << static_cast<int>(_vector[i]) << " \e[m] ";
+		buffer << "[" << (i == _head ? "\e[1;30;103m" : "\e[1;93m") << " " << static_cast<int>(_vector[i]) << " \e[m] ";
 	}
-	std::cout << "\r\n\n----------\r\n\n\e[1;93m" << _output.str() << "\e[m\r\n\n";
-	if (state != State::Running) std::cout << "\e[1;93m[" << state_to_string(state) << "]\e[m" << std::flush;
+	buffer << "\r\n\n----------\r\n\n\e[1;93m" << _output.str() << "\e[m\r\n\n";
+	if (state != State::Running) buffer << "\e[1;93m[" << state_to_string(state) << "]\e[m";
+	std::cout << buffer.str();
 }
 
 Interpreter::Interpreter()
@@ -56,7 +59,7 @@ Interpreter::Interpreter()
 	_instruction_pointer = 0;
 	_vector = {};
 	_return_stack = {};
-	_code = "++++++[>++++++++<-]++++++++++[>.<-]";
+	_code = "++++++\n[\n\t>++++++++\n\t<-\n]\n++++++++++\n[\n\t>.\n\t<-\n]";
 	_input_m.lock();
 }
 
@@ -141,7 +144,9 @@ std::string Interpreter::run()
 				state = State::Stopped;
 				break;
 		}
-		++_instruction_pointer;
+		do {
+			++_instruction_pointer;
+		} while (!isValidChar(_code[_instruction_pointer]));
 	}
 	std::cout << "\r\nPress \e[1;93many key\e[m to exit" << std::flush;
 	return _output.str();
