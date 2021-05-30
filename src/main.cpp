@@ -1,8 +1,8 @@
+#include "term.hpp"
+#include "interpreter.hpp"
+
 #include <iostream>
 #include <thread>
-
-import terminal;
-import interpreter;
 
 int main(int argc, char* argv[])
 {

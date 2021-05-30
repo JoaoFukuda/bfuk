@@ -1,14 +1,13 @@
-INT=src/term.cpp src/interpreter.cpp
-IMP=src/term-imp.cpp src/interpreter-imp.cpp
+SRC=src/term.cpp src/interpreter.cpp src/main.cpp
 LIBS=-lpthread
 
-bfuk: $(INT) $(IMP) src/main.cpp
-	g++ -fmodules-ts $(INT) $(IMP) src/main.cpp -o $@ $(LIBS)
+bfuk: $(SRC)
+	g++ -O3 $(SRC) -o $@ $(LIBS)
 
 all: bfuk debug
 
-debug: $(IMPLEMENTATIONS) $(HEADERS) src/main.cpp
-	g++ -g -fmodules-ts $(INTERFACES) $(IMPLEMENTATIONS) src/main.cpp -o $@ $(LIBS)
+debug: $(SRC)
+	g++ -Og -g $(SRC) -o $@ $(LIBS)
 
 clean:
 	rm -f bfuk debug
