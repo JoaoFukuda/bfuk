@@ -50,7 +50,7 @@ void Interpreter::print_info() const
 	}
 	buffer << "\r\n\n----------\r\n\n\e[1;93m" << _output.str() << "\e[m\r\n\n";
 	if (state != State::Running) buffer << "\e[1;93m[" << state_to_string(state) << "]\e[m";
-	std::cout << buffer.str();
+	std::cout << buffer.str() << std::flush;
 }
 
 Interpreter::Interpreter()
