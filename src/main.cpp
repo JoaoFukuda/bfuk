@@ -13,11 +13,11 @@ int main(int argc, char* argv[])
 	}
 
 	{
-		Terminal t;
+		Terminal term;
+		std::thread t ([&] () { interpreter.run(true); });
 		try {
-			std::thread t ([&] () { interpreter.run(); });
 			while (true) {
-				char input = std::cin.get();
+				unsigned char input = static_cast<unsigned char>(std::cin.get());
 				if (interpreter.should_quit()) {
 					break;
 				}
@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 			t.join();
 		}
 		catch (std::exception & e) {
-			std::cerr << "\e[1;91m[ERROR]\e[m " << e.what();
+			std::cerr << "\x1b[1;91m[ERROR]\x1b[m " << e.what();
 		}
 	}
 }

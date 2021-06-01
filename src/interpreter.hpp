@@ -18,27 +18,30 @@ enum class State
 class Interpreter
 {
 	private:
-		State state = State::Stopped;
-		size_t _head, _instruction_pointer;
-		std::string _code;
-		std::stringstream _output;
-		std::stack<size_t> _return_stack;
-		std::vector<uint8_t> _vector;
-		std::mutex _input_m;
-		char _input;
+		State m_state { State::Stopped };
+		size_t m_head { 0 };
+		size_t m_instruction_pointer { 0 };
+		std::string m_code { std::string("++++++\n[\n\t>++++++++\n\t<-\n]\n++++++++++\n[\n\t>.\n\t<-\n]") };
+		std::stringstream m_output;
+		std::stack<size_t> m_return_stack {};
+		std::vector<uint8_t> m_vector {};
+		std::mutex m_input_m;
+		unsigned char m_input;
 
 		void print_info() const;
 
 	public:
 		Interpreter();
-		~Interpreter();
 
 		bool should_quit() const;
 		bool waiting_input() const;
 
-		void load_from_file(const std::string &);
-		std::string run();
+		void load_from_file(const std::string& filename);
+		void load_from_string(const std::string& code);
+
+		std::string run(const bool verbose = false);
+		bool step();
 		void interrupt();
 		void toggle_pause();
-		void send_input(char);
+		void send_input(unsigned char input);
 };

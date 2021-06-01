@@ -5,11 +5,11 @@
 Terminal::Terminal()
 {
 	system("/bin/stty raw -echo");
-	std::cout << "\e[?1049h" << "\e[?25l" << "\e[1;1H";
+	std::cout << "\x1b[?1049h" << "\x1b[?25l" << "\x1b[1;1H";
 }
 
 Terminal::~Terminal()
 {
-	std::cout << "\e[?25h" << "\e[?1049l" << std::flush;
+	std::cout << "\x1b[?25h" << "\x1b[?1049l" << std::flush;
 	system("/bin/stty -raw echo");
 }
