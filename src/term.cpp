@@ -2,14 +2,19 @@
 
 #include <iostream>
 
-Terminal::Terminal()
+using namespace Terminal;
+
+void Terminal::begin()
 {
-	system("/bin/stty raw -echo");
-	std::cout << "\x1b[?1049h" << "\x1b[?25l" << "\x1b[1;1H";
+   system("/bin/stty raw -echo");
+   std::cout << "\x1b[?1049h"
+             << "\x1b[?25l"
+             << "\x1b[1;1H";
 }
 
-Terminal::~Terminal()
+void Terminal::end()
 {
-	std::cout << "\x1b[?25h" << "\x1b[?1049l" << std::flush;
-	system("/bin/stty -raw echo");
+   std::cout << "\x1b[?25h"
+             << "\x1b[?1049l" << std::flush;
+   system("/bin/stty -raw echo");
 }

@@ -6,6 +6,7 @@ link_libraries(pthread)
 add_executable(bfuk src/main.cpp src/interpreter.cpp src/term.cpp)
 target_compile_options(bfuk PRIVATE
 	$<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
+		-Werror
 		-Wall
 		-Wextra
 		-Wshadow

@@ -1,8 +1,7 @@
 #pragma once
 
-class Terminal
-{
-	public:
-		Terminal();
-		~Terminal();
-};
+namespace Terminal {
+void begin();
+void end();
+void clear();
+} // namespace Terminal
