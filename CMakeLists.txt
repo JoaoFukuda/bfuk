@@ -20,11 +20,6 @@ target_compile_options(bfuk PRIVATE
 		-Wconversion
 		-Wsign-conversion
 		-Wmisleading-indentation
-		-Wduplicated-cond
-		-Wduplicated-branches
-		-Wlogical-op
-		-Wnull-dereference
-		-Wuseless-cast
 		-Wdouble-promotion
 		-Wformat=2>
 	$<$<CXX_COMPILER_ID:MSVC>:
@@ -49,7 +44,9 @@ target_compile_options(bfuk PRIVATE
 		/w14906
 		/w14928>)
 
-find_package(Catch2 REQUIRED)
-add_executable(test src/tests.cpp src/interpreter.cpp)
-include_directories(test ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_link_libraries(test Catch2Main Catch2)
+find_package(Catch2)
+IF (${Catch2_FOUND})
+	add_executable(test src/tests.cpp src/interpreter.cpp)
+	include_directories(test ${CMAKE_CURRENT_SOURCE_DIR}/src)
+	target_link_libraries(test Catch2::Catch2)
+endif(${Catch2_FOUND})
